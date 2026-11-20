@@ -35,10 +35,21 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS if isinstance(settings.BACKEND_CORS_ORIGINS, list) else [settings.BACKEND_CORS_ORIGINS],
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Root route
+@app.get("/", tags=["Health"])
+def root():
+    return {
+        "status": "ok",
+        "service": settings.PROJECT_NAME,
+        "docs": "/docs",
+        "health": "/health",
+    }
 
 # Mount API Routers under /api
 app.include_router(api_router, prefix=settings.API_V1_STR)
